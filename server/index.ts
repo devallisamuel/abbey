@@ -9,10 +9,13 @@ const app = express()
 const port = Number(process.env.PORT ?? 4000)
 const sessionCookieName = 'abbey_session'
 const sessionTtlMs = 1000 * 60 * 60 * 24 * 7
+const isProduction = process.env.NODE_ENV === 'production'
 const rootDir = process.cwd()
 const dataDir = join(rootDir, 'data')
 const clientDir = join(rootDir, 'dist', 'client')
-const databasePath = join(dataDir, 'abbey.db')
+const databasePath = process.env.DATABASE_PATH
+  ? resolve(process.env.DATABASE_PATH)
+  : join(dataDir, 'abbey.db')
 
 mkdirSync(dataDir, { recursive: true })
 
@@ -100,10 +103,15 @@ type AuthedRequest = Request & {
   sessionId: string
 }
 
+app.set('trust proxy', 1)
 app.use(express.json())
 
 seedDemoUsers()
 cleanupExpiredSessions()
+
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true })
+})
 
 app.get('/api/auth/session', (req, res) => {
   const auth = getAuthenticatedRequest(req)
@@ -613,7 +621,7 @@ function setSessionCookie(res: Response, sessionId: string) {
   res.cookie(sessionCookieName, sessionId, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: isProduction,
     maxAge: sessionTtlMs,
     path: '/',
   })
@@ -623,7 +631,7 @@ function clearSessionCookie(res: Response) {
   res.clearCookie(sessionCookieName, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: false,
+    secure: isProduction,
     path: '/',
   })
 }
