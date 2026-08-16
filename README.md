@@ -38,7 +38,7 @@ The demo users are inserted only when the database is empty.
 - `npm run build`
 - `npm run start`
 
-The server serves the built frontend from `dist/client` and stores the SQLite database in `data/abbey.db`.
+The server serves the built frontend from `dist/client` and starts directly from `server/index.ts` on Node 22.
 
 ## Deploy Free On Render
 
