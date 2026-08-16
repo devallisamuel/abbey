@@ -47,10 +47,9 @@ Use a single Render web service for both frontend and backend.
 ### Render settings
 
 - Runtime: `Node`
-- Build Command: `npm install && npm run build`
-- Start Command: `npm run start`
+- Build Command: `npm install --include=dev && npm run build`
+- Start Command: `NODE_ENV=production npm run start`
 - Health Check Path: `/api/health`
-- Environment Variable: `NODE_ENV=production`
 - Node Version: `22.16.0`
 
 ### Fastest setup
